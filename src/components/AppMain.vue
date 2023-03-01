@@ -20,8 +20,11 @@ export default {
     fetchArchetype() {
       let archetypes = [];
       for (let card of store.yugiCards) {
-        if (!archetypes.includes(card.archetype)) {
-          archetypes.push(card.archetype);
+        // AGGIUNGI L'OPZIONE SOLO SE L'ARCHETIPO E' PRESENTE
+        if (card.archetype != null) {
+          if (!archetypes.includes(card.archetype)) {
+            archetypes.push(card.archetype);
+          }
         }
       }
       return archetypes;
@@ -32,6 +35,7 @@ export default {
     // DROP DOWN (il @change invia l'evento come .target.value)
     filterCards(archetype) {
       // SE L'OPZIONE E' ALL, SWITCHA A FALSE SHOWFILTEREDCARDS
+      console.log(archetype.target.value);
       if (archetype.target.value == "All") {
         this.showFilteredCards = false;
       } else {
@@ -53,8 +57,10 @@ export default {
 <template>
   <main>
     <div class="container">
+      <!-- AL CLICK, FILTRA LE CARDS IN BASE ALL'OPZIONE  -->
       <select @change="filterCards" class="my-5">
         <option>All</option>
+        <!-- CICLA LA COMPUTED PER AGGIUNGERE LE OPZIONI DI FILTRO CARTE UNA SOLA VOLTA -->
         <option v-for="archetype in fetchArchetype">
           {{ archetype }}
         </option>
@@ -89,7 +95,7 @@ export default {
               ></AppCard>
             </div>
           </div>
-          <!-- LOADER ATTIVO -->
+          <!-- ALTRIMENTI MOSTRA LOADER SE IL CARICAMENTO E' IN CORSO -->
           <AppLoader v-else>
             <p>Carico le cards.</p>
           </AppLoader>
