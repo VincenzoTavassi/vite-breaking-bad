@@ -70,7 +70,7 @@ export default {
       <select @change="filterCards" class="my-5">
         <option>All</option>
         <!-- CICLA LA COMPUTED PER AGGIUNGERE LE OPZIONI DI FILTRO CARTE UNA SOLA VOLTA -->
-        <option v-for="archetype in fetchArchetype">
+        <option v-for="archetype in fetchArchetype" :key="archetype">
           {{ archetype }}
         </option>
       </select>
@@ -100,6 +100,7 @@ export default {
                 :immagine="card.card_images[0].image_url"
                 :titolo="card.name"
                 :archetipo="card.archetype"
+                :key="card.id"
               ></AppCard>
             </div>
             <!-- SE IL FILTRO CARTE E' ATTIVO, PRENDILE DALL'ARRAY LOCALE -->
@@ -112,6 +113,7 @@ export default {
                 :immagine="card.card_images[0].image_url"
                 :titolo="card.name"
                 :archetipo="card.archetype"
+                :key="card.id"
               ></AppCard>
             </div>
           </div>
