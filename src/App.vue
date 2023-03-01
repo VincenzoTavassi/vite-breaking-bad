@@ -12,9 +12,17 @@ export default {
   },
   methods: {
     fetchCards() {
-      axios.get(store.url).then((response) => {
-        store.yugiCards = response.data.data;
-      });
+      store.isLoading = true;
+      axios
+        .get(store.url)
+        .then((response) => {
+          store.yugiCards = response.data.data;
+        })
+        .finally(() => {
+          setTimeout(() => {
+            store.isLoading = false;
+          }, 1000);
+        });
     },
   },
   created() {

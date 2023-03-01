@@ -1,8 +1,9 @@
 <script>
 import { store } from "../data/store";
 import AppCard from "./AppCard.vue";
+import AppLoader from "./AppLoader.vue";
 export default {
-  components: { AppCard },
+  components: { AppCard, AppLoader },
   data() {
     return {
       store,
@@ -20,7 +21,10 @@ export default {
       </select>
       <section>
         <div class="container">
-          <div class="row row-cols-5 align-items-stretch g-3">
+          <div
+            v-if="!store.isLoading"
+            class="row row-cols-5 align-items-stretch g-3"
+          >
             <AppCard
               v-for="card in store.yugiCards"
               :immagine="card.card_images[0].image_url_small"
@@ -28,6 +32,9 @@ export default {
               :archetipo="card.archetype"
             ></AppCard>
           </div>
+          <AppLoader v-else>
+            <p>Carico le cards.</p>
+          </AppLoader>
         </div>
       </section>
     </div>
