@@ -19,9 +19,9 @@ export default {
           store.yugiCards = response.data.data;
         })
         .finally(() => {
-          setTimeout(() => {
-            store.isLoading = false;
-          }, 1000);
+          store.isLoading = false;
+          // setTimeout(() => {
+          // }, 1000);
         });
     },
   },
