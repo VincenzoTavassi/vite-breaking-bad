@@ -14,7 +14,7 @@ export default {
     fetchCards() {
       store.isLoading = true;
       axios
-        .get(store.url)
+        .get(store.url + store.offSet)
         .then((response) => {
           store.yugiCards = response.data.data;
         })

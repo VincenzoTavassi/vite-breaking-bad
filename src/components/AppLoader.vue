@@ -10,6 +10,7 @@ export default {};
 </template>
 
 <style>
+/* OVERLAY PER IL LOADER  */
 .overlay {
   position: fixed;
   top: 0;

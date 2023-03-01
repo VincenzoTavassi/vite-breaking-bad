@@ -49,8 +49,17 @@ export default {
         this.showFilteredCards = true;
       }
     },
+    nextPage() {
+      // modifico l'offset e uso il
+      // metodo del padre, app.vue
+      store.offSet += 40;
+      this.$parent.fetchCards();
+    },
+    prevPage() {
+      store.offSet -= 40;
+      this.$parent.fetchCards();
+    },
   },
-  created() {},
 };
 </script>
 
@@ -65,6 +74,17 @@ export default {
           {{ archetype }}
         </option>
       </select>
+      <button type="button" class="btn btn-secondary mx-3" @click="nextPage()">
+        NEXT
+      </button>
+      <button
+        v-if="store.offSet >= 40"
+        type="button"
+        class="btn btn-secondary"
+        @click="prevPage()"
+      >
+        PREV
+      </button>
       <section>
         <div class="container">
           <!-- SE NON E' IN CARICAMENTO, PROCEDI -->
@@ -77,7 +97,7 @@ export default {
             >
               <AppCard
                 v-for="card in store.yugiCards"
-                :immagine="card.card_images[0].image_url_small"
+                :immagine="card.card_images[0].image_url"
                 :titolo="card.name"
                 :archetipo="card.archetype"
               ></AppCard>
@@ -89,7 +109,7 @@ export default {
             >
               <AppCard
                 v-for="card in localCards"
-                :immagine="card.card_images[0].image_url_small"
+                :immagine="card.card_images[0].image_url"
                 :titolo="card.name"
                 :archetipo="card.archetype"
               ></AppCard>
@@ -114,6 +134,7 @@ main {
 select {
   padding: 10px 5px;
   font-size: 1.5rem;
+  width: 250px;
 }
 
 section {
