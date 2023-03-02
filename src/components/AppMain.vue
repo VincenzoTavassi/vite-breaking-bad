@@ -2,8 +2,11 @@
 import { store } from "../data/store";
 import AppCard from "./AppCard.vue";
 import AppLoader from "./AppLoader.vue";
+import AppSearch from "./AppSearch.vue";
+import axios from "axios";
+
 export default {
-  components: { AppCard, AppLoader },
+  components: { AppCard, AppLoader, AppSearch },
   data() {
     return {
       store,
@@ -12,6 +15,9 @@ export default {
       // USO L'ARRAY DELLO STORE
       localCards: [],
       showFilteredCards: false,
+      cardsCount: 0,
+      offSet: 0,
+      url: "https://db.ygoprodeck.com/api/v7/cardinfo.php?num=40&offset=",
     };
   },
   computed: {
@@ -52,13 +58,34 @@ export default {
     nextPage() {
       // modifico l'offset e uso il
       // metodo del padre, app.vue
-      store.offSet += 40;
-      this.$parent.fetchCards();
+      this.offSet += 40;
+      this.fetchCards();
     },
     prevPage() {
-      store.offSet -= 40;
-      this.$parent.fetchCards();
+      this.offSet -= 40;
+      this.fetchCards();
     },
+    fetchCards(filter) {
+      store.isLoading = true;
+      let urlParams = "";
+      if (!filter || filter.target.value == "All") {
+        urlParams = this.url + this.offSet;
+      } else if (filter) {
+        urlParams = this.url + this.offSet + "&type=" + filter.target.value;
+      }
+      axios
+        .get(urlParams)
+        .then((response) => {
+          store.yugiCards = response.data.data;
+          this.cardsCount = response.data.meta.total_rows;
+        })
+        .finally(() => {
+          store.isLoading = false;
+        });
+    },
+  },
+  created() {
+    this.fetchCards();
   },
 };
 </script>
@@ -66,8 +93,10 @@ export default {
 <template>
   <main>
     <div class="container">
+      <AppSearch @change-option="fetchCards" />
       <!-- AL CLICK, FILTRA LE CARDS IN BASE ALL'OPZIONE  -->
-      <select @change="filterCards" class="my-5">
+      <label class="mx-2 fw-bold" for="archetype-search">Archetipo:</label>
+      <select id="archetype-search" @change="filterCards" class="my-5">
         <option>All</option>
         <!-- CICLA LA COMPUTED PER AGGIUNGERE LE OPZIONI DI FILTRO CARTE UNA SOLA VOLTA -->
         <option v-for="archetype in fetchArchetype" :key="archetype">
@@ -78,7 +107,7 @@ export default {
         NEXT
       </button>
       <button
-        v-if="store.offSet >= 40"
+        v-if="offSet >= 40"
         type="button"
         class="btn btn-secondary"
         @click="prevPage()"
@@ -87,6 +116,7 @@ export default {
       </button>
       <section>
         <div class="container">
+          <h2>Ho trovato {{ cardsCount }} carte.</h2>
           <!-- SE NON E' IN CARICAMENTO, PROCEDI -->
           <div v-if="!store.isLoading">
             <!-- SE IL FILTRO CARTE NON E' ATTIVO, PRENDILE DALL'ARRAY
