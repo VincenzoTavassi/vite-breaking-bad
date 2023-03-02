@@ -1,11 +1,14 @@
 <script>
 export default {
   props: {
-    counter: Number,
+    totalCounter: Number,
+    currentCounter: Number,
   },
 };
 </script>
 <template>
-  <h2>Ho trovato {{ counter }} risultati.</h2>
+  <h2>
+    Stai visualizzando {{ currentCounter }} di {{ totalCounter }} risultati.
+  </h2>
 </template>
 <style></style>

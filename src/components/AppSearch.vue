@@ -11,6 +11,7 @@ export default {
 </script>
 
 <template>
+  <!--- $emit con $event triggerato dal @change della select-->
   <select class="my-5" @change="$emit('change-option', $event)">
     <option>All</option>
     <option v-for="option in options" :key="option">

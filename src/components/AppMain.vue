@@ -19,10 +19,10 @@ export default {
     return {
       store,
       cardsCount: 0,
-      offSet: 0,
-      url: "https://db.ygoprodeck.com/api/v7/cardinfo.php?num=40&offset=",
+      url: "https://db.ygoprodeck.com/api/v7/cardinfo.php?num=40&offset=0",
       nextPageApi: "",
       prevPageApi: "",
+      currentCards: "",
     };
   },
   methods: {
@@ -35,6 +35,9 @@ export default {
           this.cardsCount = response.data.meta.total_rows;
           this.nextPageApi = response.data.meta.next_page;
           this.prevPageApi = response.data.meta.previous_page;
+          const cardsRemainingApi = response.data.meta.rows_remaining;
+          // CALCOLO IL NUMERO DI CARTE VISUALIZZATO NELLA PAGINA DEI RISULTATI
+          this.currentCards = this.cardsCount - cardsRemainingApi;
         })
         .finally(() => {
           store.isLoading = false;
@@ -47,13 +50,17 @@ export default {
       this.updateCards(this.prevPageApi);
     },
     fetchCards(filter) {
+      // COSTRUISCO LA URL IN BASE AL FILTRO
       let urlParams = "";
+      // SE IL FILTRO NON C'E' OPPURE E' ALL, USA URL DI DEFAULT
       if (!filter || filter.target.value == "All") {
-        urlParams = this.url + this.offSet;
+        urlParams = this.url;
+        // SE IL FILTRO E' PRESENTE, COSTRUISCI LA URL IN BASE
+        // AL target.value DEL FILTRO (@change event nella select)
       } else if (filter) {
-        urlParams = this.url + this.offSet + "&type=" + filter.target.value;
+        urlParams = this.url + "&type=" + filter.target.value;
       }
-      this.updateCards(urlParams);
+      this.updateCards(urlParams); // Invia la url alla funzione
     },
   },
   created() {
@@ -65,6 +72,7 @@ export default {
 <template>
   <main>
     <div class="container">
+      <!------ Invoca la funzione fetchCards inviando sottobanco il parametro dell'evento della select ($event nel figlio) ----->
       <AppSearch @change-option="fetchCards" />
       <AppChangePage v-if="this.nextPageApi" @change-page="nextPage"
         >NEXT</AppChangePage
@@ -75,7 +83,11 @@ export default {
       <section>
         <div class="container">
           <!-- SE NON E' IN CARICAMENTO, PROCEDI -->
-          <AppSearchCounter :counter="cardsCount" v-if="!store.isLoading" />
+          <AppSearchCounter
+            :totalCounter="cardsCount"
+            :currentCounter="currentCards"
+            v-if="!store.isLoading"
+          />
           <div
             v-if="!store.isLoading"
             class="row row-cols-5 align-items-stretch g-3"
