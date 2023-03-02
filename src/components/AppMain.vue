@@ -3,10 +3,18 @@ import { store } from "../data/store";
 import AppCard from "./AppCard.vue";
 import AppLoader from "./AppLoader.vue";
 import AppSearch from "./AppSearch.vue";
+import AppChangePage from "./AppChangePage.vue";
+import AppSearchCounter from "./AppSearchCounter.vue";
 import axios from "axios";
 
 export default {
-  components: { AppCard, AppLoader, AppSearch },
+  components: {
+    AppCard,
+    AppLoader,
+    AppSearch,
+    AppChangePage,
+    AppSearchCounter,
+  },
   data() {
     return {
       store,
@@ -58,26 +66,16 @@ export default {
   <main>
     <div class="container">
       <AppSearch @change-option="fetchCards" />
-      <button
-        v-if="this.nextPageApi"
-        type="button"
-        class="btn btn-secondary mx-3"
-        @click="nextPage()"
+      <AppChangePage v-if="this.nextPageApi" @change-page="nextPage"
+        >NEXT</AppChangePage
       >
-        NEXT
-      </button>
-      <button
-        v-if="this.prevPageApi"
-        type="button"
-        class="btn btn-secondary"
-        @click="prevPage()"
+      <AppChangePage v-if="this.prevPageApi" @change-page="prevPage"
+        >PREV</AppChangePage
       >
-        PREV
-      </button>
       <section>
         <div class="container">
-          <h2>Ho trovato {{ cardsCount }} carte.</h2>
           <!-- SE NON E' IN CARICAMENTO, PROCEDI -->
+          <AppSearchCounter :counter="cardsCount" v-if="!store.isLoading" />
           <div
             v-if="!store.isLoading"
             class="row row-cols-5 align-items-stretch g-3"
